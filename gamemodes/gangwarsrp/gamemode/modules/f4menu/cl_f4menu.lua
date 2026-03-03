@@ -168,13 +168,15 @@ function GWRP.CloseF4Menu()
     ActiveTab = nil
 end
 
--- Hook into F4 key press (SpawnMenu bind)
-hook.Add("OnSpawnMenuOpen", "GWRP_F4MenuOpen", function()
+-- Open with F4 key (ShowTeam hook = gm_showteam = F4, NOT the Q spawnmenu)
+hook.Add("ShowTeam", "GWRP_F4MenuOpen", function()
     GWRP.OpenF4Menu()
-    return false -- prevent default spawn menu
 end)
 
--- Also close on Escape
-hook.Add("OnSpawnMenuClose", "GWRP_F4MenuClose", function()
-    GWRP.CloseF4Menu()
+-- Close on Escape key
+hook.Add("Think", "GWRP_F4MenuEscape", function()
+    if not IsValid(F4Frame) then return end
+    if input.IsKeyDown(KEY_ESCAPE) then
+        GWRP.CloseF4Menu()
+    end
 end)
