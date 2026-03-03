@@ -7,6 +7,10 @@ GWRP.Modules.Registered = GWRP.Modules.Registered or {}
 GWRP.Modules.LoadOrder = GWRP.Modules.LoadOrder or {}
 GWRP.Modules._initialized = GWRP.Modules._initialized or false
 
+-- Full path prefix for include/AddCSLuaFile (resolve from LUA mount root
+-- so paths work regardless of which file calls them)
+local GM_PATH = "gangwarsrp/gamemode/"
+
 -- Register a module from its manifest
 function GWRP.Modules:Register(manifest)
     if not manifest or not manifest.id then
@@ -142,8 +146,8 @@ end
 
 -- Discover and register all modules from the modules/ directory
 function GWRP.Modules:Discover()
-    local basePath = "gangwarsrp/gamemode/modules/"
-    local files, dirs = file.Find(basePath .. "*", "LUA")
+    local searchPath = GM_PATH .. "modules/"
+    local files, dirs = file.Find(searchPath .. "*", "LUA")
 
     if not dirs then
         GWRP.Log("[MODULE] No module directories found", "warn")
@@ -151,12 +155,12 @@ function GWRP.Modules:Discover()
     end
 
     for _, dir in ipairs(dirs) do
-        local manifestPath = "modules/" .. dir .. "/sh_module.lua"
-        if file.Exists(basePath .. dir .. "/sh_module.lua", "LUA") then
+        local manifestFile = searchPath .. dir .. "/sh_module.lua"
+        if file.Exists(manifestFile, "LUA") then
             if SERVER then
-                AddCSLuaFile(manifestPath)
+                AddCSLuaFile(manifestFile)
             end
-            include(manifestPath)
+            include(manifestFile)
             GWRP.Log("[MODULE] Discovered module in: " .. dir, "debug")
         else
             GWRP.Log("[MODULE] Directory '" .. dir .. "' has no sh_module.lua, skipping", "warn")
@@ -195,7 +199,7 @@ function GWRP.Modules:LoadModule(moduleID, forceReload)
     if not mod or not mod.enabled then return false end
     if mod.loaded and not forceReload then return true end
 
-    local basePath = "modules/" .. moduleID .. "/"
+    local basePath = GM_PATH .. "modules/" .. moduleID .. "/"
 
     -- Load shared files
     for _, f in ipairs(mod.shared) do

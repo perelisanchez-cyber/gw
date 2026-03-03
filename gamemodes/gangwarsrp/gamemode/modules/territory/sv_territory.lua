@@ -37,7 +37,7 @@ hook.Add("GWRP_ModuleLoaded", "GWRP_TerritoryInit", function(moduleID)
     local mapName = game.GetMap()
     local configPath = "gangwarsrp/gamemode/config/maps/" .. mapName .. ".lua"
     if file.Exists(configPath, "LUA") then
-        include("config/maps/" .. mapName .. ".lua")
+        include(configPath)
         GWRP.Log("[TERRITORY] Loaded map config for " .. mapName, "info")
     else
         GWRP.Log("[TERRITORY] No map config for " .. mapName, "warn")
