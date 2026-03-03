@@ -168,21 +168,19 @@ function GWRP.CloseF4Menu()
     ActiveTab = nil
 end
 
--- Catch F4 key via PlayerBindPress (works on all gamemode bases)
--- gm_showteam = F4, gm_showspawnmenu = Q
-hook.Add("PlayerBindPress", "GWRP_F4MenuBind", function(ply, bind, pressed)
-    if not pressed then return end
-
-    if bind == "gm_showteam" then
-        GWRP.OpenF4Menu()
-        return true -- block default behavior
-    end
+-- F4 has no default GMod bind, so catch the raw key directly.
+-- Use PlayerButtonDown for a clean single-fire on key press.
+hook.Add("PlayerButtonDown", "GWRP_F4MenuOpen", function(ply, button)
+    if button ~= KEY_F4 then return end
+    if ply ~= LocalPlayer() then return end
+    GWRP.OpenF4Menu()
 end)
 
--- Close on Escape key
-hook.Add("Think", "GWRP_F4MenuEscape", function()
-    if not IsValid(F4Frame) then return end
-    if input.IsKeyDown(KEY_ESCAPE) then
+-- Close on Escape or pressing F4 again (toggle is handled inside OpenF4Menu)
+hook.Add("PlayerButtonDown", "GWRP_F4MenuClose", function(ply, button)
+    if button ~= KEY_ESCAPE then return end
+    if ply ~= LocalPlayer() then return end
+    if IsValid(F4Frame) then
         GWRP.CloseF4Menu()
     end
 end)

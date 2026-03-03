@@ -1,6 +1,6 @@
 "gangwarsrp"
 {
-	"base"		"base"
+	"base"		"sandbox"
 	"title"		"GangWarsRP"
 	"maps"		"rp_*"
 	"menusystem"	"1"
