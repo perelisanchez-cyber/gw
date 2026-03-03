@@ -1,7 +1,15 @@
 -- GangWarsRP - Client Entry Point
 -- Auto-refresh safe: re-execution reloads modules without breaking state
+-- Derives from sandbox: spawnmenu (Q) works normally
 
 include("shared.lua")
+
+-- Explicitly allow the sandbox spawnmenu to open on Q key.
+-- Without this, the spawnmenu won't open because our gamemode's cl_init.lua
+-- replaces sandbox's cl_init.lua in the load chain.
+hook.Add("SpawnMenuOpen", "GWRP_AllowSpawnMenu", function()
+    return true
+end)
 
 -- First-time module load on game start
 hook.Add("Initialize", "GWRP_ClientInit", function()
