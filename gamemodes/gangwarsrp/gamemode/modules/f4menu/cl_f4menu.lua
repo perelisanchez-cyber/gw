@@ -168,9 +168,15 @@ function GWRP.CloseF4Menu()
     ActiveTab = nil
 end
 
--- Open with F4 key (ShowTeam hook = gm_showteam = F4, NOT the Q spawnmenu)
-hook.Add("ShowTeam", "GWRP_F4MenuOpen", function()
-    GWRP.OpenF4Menu()
+-- Catch F4 key via PlayerBindPress (works on all gamemode bases)
+-- gm_showteam = F4, gm_showspawnmenu = Q
+hook.Add("PlayerBindPress", "GWRP_F4MenuBind", function(ply, bind, pressed)
+    if not pressed then return end
+
+    if bind == "gm_showteam" then
+        GWRP.OpenF4Menu()
+        return true -- block default behavior
+    end
 end)
 
 -- Close on Escape key
