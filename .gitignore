@@ -1,0 +1,21 @@
+# OS
+.DS_Store
+Thumbs.db
+__MACOSX/
+
+# GMod
+*.gma
+*.cache
+
+# SQLite (generated at runtime)
+*.db
+sv.db
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Misc
+*.log

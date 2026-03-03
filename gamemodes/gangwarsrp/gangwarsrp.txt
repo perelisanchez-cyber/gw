@@ -1,0 +1,8 @@
+"gangwarsrp"
+{
+	"base"		"base"
+	"title"		"GangWarsRP"
+	"maps"		"rp_*"
+	"menusystem"	"1"
+	"workshopid"	""
+}
