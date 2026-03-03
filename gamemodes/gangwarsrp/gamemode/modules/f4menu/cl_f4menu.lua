@@ -166,6 +166,10 @@ function GWRP.CloseF4Menu()
     F4Frame = nil
     ActivePanel = nil
     ActiveTab = nil
+
+    -- Release mouse cursor back to the game
+    gui.EnableScreenClicker(false)
+    CloseDermaMenus()
 end
 
 -- F4 has no default GMod bind, so catch the raw key directly.
