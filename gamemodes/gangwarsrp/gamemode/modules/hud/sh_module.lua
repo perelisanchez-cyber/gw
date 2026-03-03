@@ -13,6 +13,7 @@ GWRP.Modules:Register({
         "cl_hud.lua",
         "cl_scoreboard.lua",
         "cl_notifications.lua",
+        "cl_settings.lua",
     },
     server = {},
     shared = {},

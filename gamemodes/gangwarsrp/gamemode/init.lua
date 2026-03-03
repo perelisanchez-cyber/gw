@@ -10,6 +10,12 @@ AddCSLuaFile("core/sh_config.lua")
 AddCSLuaFile("core/sh_utils.lua")
 AddCSLuaFile("core/sh_module_loader.lua")
 
+-- Data configs for client
+AddCSLuaFile("config/sh_jobs_config.lua")
+AddCSLuaFile("config/sh_shops_config.lua")
+AddCSLuaFile("config/sh_weapons_config.lua")
+AddCSLuaFile("config/sh_gangs_config.lua")
+
 -- Load shared
 include("shared.lua")
 

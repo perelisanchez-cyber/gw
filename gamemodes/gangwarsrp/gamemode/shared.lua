@@ -11,6 +11,12 @@ include("core/sh_config.lua")
 include("core/sh_utils.lua")
 include("core/sh_module_loader.lua")
 
+-- Include data configs (shared so both server and client have definitions)
+include("config/sh_jobs_config.lua")
+include("config/sh_shops_config.lua")
+include("config/sh_weapons_config.lua")
+include("config/sh_gangs_config.lua")
+
 -- Register all net strings (server only, but defined in shared for reference)
 if SERVER then
     -- Core
