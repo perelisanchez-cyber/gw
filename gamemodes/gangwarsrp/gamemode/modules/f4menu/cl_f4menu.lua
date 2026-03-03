@@ -23,6 +23,14 @@ function GWRP.OpenF4Menu()
     F4Frame:SetDraggable(false)
     F4Frame:ShowCloseButton(false)
     F4Frame:MakePopup()
+    F4Frame:SetKeyboardInputEnabled(true)
+
+    -- Handle Escape inside the frame (PlayerButtonDown won't fire while popup has focus)
+    F4Frame.OnKeyCodePressed = function(s, key)
+        if key == KEY_ESCAPE or key == KEY_F4 then
+            GWRP.CloseF4Menu()
+        end
+    end
 
     F4Frame.Paint = function(s, w, h)
         draw.RoundedBox(8, 0, 0, w, h, GWRP.Theme.Colors.Background)
@@ -157,11 +165,7 @@ end
 -- Close the F4 menu
 function GWRP.CloseF4Menu()
     if IsValid(F4Frame) then
-        F4Frame:AlphaTo(0, 0.1, 0, function()
-            if IsValid(F4Frame) then
-                F4Frame:Remove()
-            end
-        end)
+        F4Frame:Remove()
     end
     F4Frame = nil
     ActivePanel = nil
@@ -173,18 +177,10 @@ function GWRP.CloseF4Menu()
 end
 
 -- F4 has no default GMod bind, so catch the raw key directly.
--- Use PlayerButtonDown for a clean single-fire on key press.
+-- PlayerButtonDown fires when no VGUI panel has focus (i.e. menu is closed).
+-- When the menu IS open, OnKeyCodePressed on the frame handles F4/Escape.
 hook.Add("PlayerButtonDown", "GWRP_F4MenuOpen", function(ply, button)
     if button ~= KEY_F4 then return end
     if ply ~= LocalPlayer() then return end
     GWRP.OpenF4Menu()
-end)
-
--- Close on Escape or pressing F4 again (toggle is handled inside OpenF4Menu)
-hook.Add("PlayerButtonDown", "GWRP_F4MenuClose", function(ply, button)
-    if button ~= KEY_ESCAPE then return end
-    if ply ~= LocalPlayer() then return end
-    if IsValid(F4Frame) then
-        GWRP.CloseF4Menu()
-    end
 end)
