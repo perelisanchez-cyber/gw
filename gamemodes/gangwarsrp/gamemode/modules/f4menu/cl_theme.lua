@@ -25,42 +25,47 @@ GWRP.Theme.Colors = {
     Money           = Color(100, 220, 100, 255),
 }
 
--- Fonts
-surface.CreateFont("GWRP_Title", {
-    font = "Roboto",
-    size = 28,
-    weight = 700,
-})
+-- Fonts (only create once; surface.CreateFont is idempotent in GMod but
+-- we guard with a flag to avoid unnecessary work on auto-refresh)
+if not GWRP.Theme._fontsCreated then
+    surface.CreateFont("GWRP_Title", {
+        font = "Roboto",
+        size = 28,
+        weight = 700,
+    })
 
-surface.CreateFont("GWRP_Header", {
-    font = "Roboto",
-    size = 20,
-    weight = 600,
-})
+    surface.CreateFont("GWRP_Header", {
+        font = "Roboto",
+        size = 20,
+        weight = 600,
+    })
 
-surface.CreateFont("GWRP_Body", {
-    font = "Roboto",
-    size = 16,
-    weight = 400,
-})
+    surface.CreateFont("GWRP_Body", {
+        font = "Roboto",
+        size = 16,
+        weight = 400,
+    })
 
-surface.CreateFont("GWRP_BodyBold", {
-    font = "Roboto",
-    size = 16,
-    weight = 600,
-})
+    surface.CreateFont("GWRP_BodyBold", {
+        font = "Roboto",
+        size = 16,
+        weight = 600,
+    })
 
-surface.CreateFont("GWRP_Small", {
-    font = "Roboto",
-    size = 13,
-    weight = 400,
-})
+    surface.CreateFont("GWRP_Small", {
+        font = "Roboto",
+        size = 13,
+        weight = 400,
+    })
 
-surface.CreateFont("GWRP_TabLabel", {
-    font = "Roboto",
-    size = 15,
-    weight = 500,
-})
+    surface.CreateFont("GWRP_TabLabel", {
+        font = "Roboto",
+        size = 15,
+        weight = 500,
+    })
+
+    GWRP.Theme._fontsCreated = true
+end
 
 -- Helper: draw a rounded box with border
 function GWRP.Theme:DrawPanel(x, y, w, h, bgColor, borderColor)

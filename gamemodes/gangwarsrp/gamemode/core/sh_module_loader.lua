@@ -1,9 +1,11 @@
 -- GangWarsRP - Module Loader
 -- Discovers, validates, and loads modules in dependency order
+-- Auto-refresh safe: supports re-execution without breaking state
 
 GWRP.Modules = GWRP.Modules or {}
 GWRP.Modules.Registered = GWRP.Modules.Registered or {}
 GWRP.Modules.LoadOrder = GWRP.Modules.LoadOrder or {}
+GWRP.Modules._initialized = GWRP.Modules._initialized or false
 
 -- Register a module from its manifest
 function GWRP.Modules:Register(manifest)
@@ -12,9 +14,11 @@ function GWRP.Modules:Register(manifest)
         return false
     end
 
-    if self.Registered[manifest.id] then
-        GWRP.Log("[MODULE] Module '" .. manifest.id .. "' already registered, skipping", "warn")
-        return false
+    -- On reload, allow re-registration to pick up manifest changes
+    -- but preserve runtime loaded state
+    local existing = self.Registered[manifest.id]
+    if existing then
+        manifest.loaded = existing.loaded
     end
 
     -- Apply config override for enabled state
@@ -28,7 +32,7 @@ function GWRP.Modules:Register(manifest)
     manifest.server = manifest.server or {}
     manifest.shared = manifest.shared or {}
     manifest.commands = manifest.commands or {}
-    manifest.loaded = false
+    manifest.loaded = manifest.loaded or false
 
     self.Registered[manifest.id] = manifest
     GWRP.Log("[MODULE] Registered: " .. manifest.id .. " (" .. (manifest.name or "unnamed") .. ") [" .. (manifest.enabled and "enabled" or "disabled") .. "]", "debug")
@@ -161,7 +165,14 @@ function GWRP.Modules:Discover()
 end
 
 -- Load all enabled modules in dependency order
+-- Safe to call multiple times (on reload, re-includes files for already-loaded modules)
 function GWRP.Modules:LoadAll()
+    local isReload = self._initialized
+
+    if isReload then
+        GWRP.Log("[MODULE] Auto-refresh detected, reloading modules...", "info")
+    end
+
     GWRP.Log("[MODULE] Discovering modules...", "info")
     self:Discover()
 
@@ -170,17 +181,19 @@ function GWRP.Modules:LoadAll()
 
     GWRP.Log("[MODULE] Loading " .. #order .. " modules...", "info")
     for _, moduleID in ipairs(order) do
-        self:LoadModule(moduleID)
+        self:LoadModule(moduleID, isReload)
     end
 
-    GWRP.Log("[MODULE] Module loading complete", "info")
+    self._initialized = true
+    GWRP.Log("[MODULE] Module loading complete" .. (isReload and " (reloaded)" or ""), "info")
 end
 
 -- Load a single module's files
-function GWRP.Modules:LoadModule(moduleID)
+-- forceReload: if true, re-include files even if already loaded (for auto-refresh)
+function GWRP.Modules:LoadModule(moduleID, forceReload)
     local mod = self.Registered[moduleID]
     if not mod or not mod.enabled then return false end
-    if mod.loaded then return true end
+    if mod.loaded and not forceReload then return true end
 
     local basePath = "modules/" .. moduleID .. "/"
 
@@ -211,8 +224,14 @@ function GWRP.Modules:LoadModule(moduleID)
         end
     end
 
+    local wasLoaded = mod.loaded
     mod.loaded = true
-    GWRP.Log("[MODULE] Loaded: " .. moduleID .. " v" .. (mod.version or "?"), "info")
+
+    if forceReload and wasLoaded then
+        GWRP.Log("[MODULE] Reloaded: " .. moduleID, "info")
+    else
+        GWRP.Log("[MODULE] Loaded: " .. moduleID .. " v" .. (mod.version or "?"), "info")
+    end
 
     -- Fire hook so other systems know this module is ready
     hook.Run("GWRP_ModuleLoaded", moduleID, mod)

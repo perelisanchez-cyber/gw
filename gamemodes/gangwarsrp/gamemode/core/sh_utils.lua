@@ -16,7 +16,7 @@ end
 ----------------------------------------------
 
 GWRP.Security = GWRP.Security or {}
-GWRP.Security.RateLimits = {}
+GWRP.Security.RateLimits = GWRP.Security.RateLimits or {}
 
 -- Rate limiter: returns true if action is allowed, false if rate limited
 function GWRP.Security:RateCheck(ply, actionID, maxCalls, windowSeconds)

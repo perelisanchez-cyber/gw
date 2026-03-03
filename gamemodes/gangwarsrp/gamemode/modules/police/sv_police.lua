@@ -1,8 +1,8 @@
 -- GangWarsRP - Police Server Logic
--- TODO: Implement wanted system, arrests, jail, warrants, lockdowns
+-- Auto-refresh safe: preserves wanted player state across reloads
 
 GWRP.Police = GWRP.Police or {}
-GWRP.Police.WantedPlayers = {}
+GWRP.Police.WantedPlayers = GWRP.Police.WantedPlayers or {}
 
 -- Set a player as wanted
 function GWRP.Police:SetWanted(officer, target, reason)

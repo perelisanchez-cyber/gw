@@ -1,4 +1,5 @@
 -- GangWarsRP - Server Entry Point
+-- Auto-refresh safe: re-execution reloads modules without breaking state
 
 -- Send client files
 AddCSLuaFile("shared.lua")
@@ -17,18 +18,23 @@ include("core/sv_logging.lua")
 include("core/sv_database.lua")
 include("core/sv_commands.lua")
 
--- Initialize database tables
+-- Initialize database tables on first server start
 hook.Add("Initialize", "GWRP_ServerInit", function()
     GWRP.Log("[CORE] GangWarsRP v" .. GWRP.Version .. " initializing...", "info")
     GWRP.DB:Initialize()
     GWRP.Log("[CORE] Database initialized", "info")
-end)
 
--- Load all modules after core is ready
-hook.Add("Initialize", "GWRP_LoadModules", function()
+    -- First-time module load happens here
     GWRP.Modules:LoadAll()
     GWRP.Log("[CORE] All modules loaded", "info")
 end)
+
+-- On auto-refresh, Initialize won't fire again, so reload modules directly.
+-- Check if the server is already running (players exist or game has started)
+if GWRP.Modules._initialized then
+    GWRP.Log("[CORE] Auto-refresh detected, reloading...", "info")
+    GWRP.Modules:LoadAll()
+end
 
 -- Player initial spawn: load data from database
 hook.Add("PlayerInitialSpawn", "GWRP_PlayerInit", function(ply)
@@ -50,7 +56,7 @@ hook.Add("PlayerDisconnected", "GWRP_PlayerDisconnect", function(ply)
     GWRP.DB:SavePlayerData(ply)
 end)
 
--- Periodic auto-save
+-- Periodic auto-save (timer.Create replaces existing timer with same name — reload safe)
 timer.Create("GWRP_AutoSave", 300, 0, function()
     for _, ply in ipairs(player.GetAll()) do
         if IsValid(ply) then

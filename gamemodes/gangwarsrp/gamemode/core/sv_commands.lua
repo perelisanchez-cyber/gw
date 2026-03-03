@@ -1,7 +1,7 @@
 -- GangWarsRP - Chat Command Registration Framework (Server Only)
 
 GWRP.Commands = GWRP.Commands or {}
-GWRP.Commands.Registered = {}
+GWRP.Commands.Registered = GWRP.Commands.Registered or {}
 
 -- Register a chat command
 function GWRP.Commands:Register(cmd, callback, description, usage)

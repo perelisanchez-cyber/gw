@@ -1,7 +1,7 @@
 -- GangWarsRP - Notification System
 
 GWRP.Notifications = GWRP.Notifications or {}
-GWRP.Notifications.Queue = {}
+GWRP.Notifications.Queue = GWRP.Notifications.Queue or {}
 
 local NOTIF_COLORS = {
     [0] = GWRP.Theme and GWRP.Theme.Colors.Info or Color(70, 150, 220, 255),     -- info
